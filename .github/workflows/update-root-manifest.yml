@@ -40,4 +40,4 @@ jobs:
         run: |
           git add manifest.json
           git commit -m "Update manifest.json from release ${{ github.event.release.tag_name }}" || echo "No changes to commit"
-          git push
+          git push origin main
