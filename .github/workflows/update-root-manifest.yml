@@ -1,0 +1,43 @@
+name: Update root manifest on new release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config user.name "Developer-Mike"
+          git config user.email "delta.cephei@outlook.com"
+
+      - name: Download manifest.json asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Query assets and get the manifest.json download URL
+          asset_url=$(gh api repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets \
+            --jq '.[] | select(.name == "manifest.json") | .url')
+
+          if [ -z "$asset_url" ]; then
+            echo "manifest.json not found in release assets"
+            exit 1
+          fi
+
+          # Download the asset to root
+          curl -L \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/octet-stream" \
+            "$asset_url" -o manifest.json
+
+      - name: Commit changes
+        run: |
+          git add manifest.json
+          git commit -m "Update manifest.json from release ${{ github.event.release.tag_name }}" || echo "No changes to commit"
+          git push
