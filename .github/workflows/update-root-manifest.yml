@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   update-manifest:
     runs-on: ubuntu-latest
@@ -39,7 +42,10 @@ jobs:
             "$asset_url" -o manifest.json
 
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git remote set-url origin https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}.git
           git add manifest.json
           git commit -m "Update manifest.json from release ${{ github.event.release.tag_name }}" || echo "No changes to commit"
           git push origin main
