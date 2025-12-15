@@ -1,7 +1,7 @@
 {
   "id": "starlight-pdf",
   "name": "Starlight PDF",
-  "version": "0.5.1",
+  "version": "1.0.0",
   "minAppVersion": "1.1.0",
   "description": "The fairest PDF annotation tool designed for the best possible pen and keyboard experience.",
   "author": "mika.dev",
